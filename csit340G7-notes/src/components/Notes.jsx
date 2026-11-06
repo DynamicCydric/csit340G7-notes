@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import NoteCard from './NoteCard.jsx'
 
+function handleDelete(id) {
+  setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id))
+}
+
 function handleSubmit(e) {
   e.preventDefault()
   const trimmedTitle = formData.title.trim()
@@ -89,8 +93,9 @@ function handleChange(e) {
               <NoteCard title={note.title} body={note.body} />
               <button
                 type="button"
+                onClick={() => handleDelete(note.id)}
                 className="absolute top-4 right-5 cursor-pointer text-[26px] leading-none text-[#949494] hover:text-[#c18585]"
-              >
+>
                 ×
               </button>
             </li>
