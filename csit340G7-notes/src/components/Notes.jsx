@@ -15,35 +15,35 @@ const startingNotes = [
 ]
 
 function Notes() {
-  
   const [notes, setNotes] = useState(() => {
     const saved = localStorage.getItem('notes')
     return saved ? JSON.parse(saved) : startingNotes
   })
 
-  const [formData, setFormData] = useState({ title: '', body: '' })
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('draft')
+    return saved ? JSON.parse(saved) : { title: '', body: '' }
+  })
+
   const [searchQuery, setSearchQuery] = useState('')
   const titleRef = useRef(null)
 
-useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes))
   }, [notes])
 
-useEffect(() => {
+  useEffect(() => {
     const id = setTimeout(() => {
-      localStorage.setItem('draft', JSON.stringify(form))
-      console.log('draft saved:', form.title)
+      localStorage.setItem('draft', JSON.stringify(formData))
     }, 1000)
     return () => clearTimeout(id)
-  }, [form])
+  }, [formData])
 
-
-  const visibleNotes = useMemo(() => {
-    console.log('filtering')
+  const filteredNotes = useMemo(() => {
     return notes.filter((note) =>
-      note.title.toLowerCase().includes(search.toLowerCase())
+      note.title.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  }, [notes, search])
+  }, [notes, searchQuery])
 
   function handleChange(e) {
     const { name, value } = e.target
@@ -69,9 +69,8 @@ useEffect(() => {
   }
 
   const handleDelete = useCallback((id) => {
-
     setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id))
-  }, [notes])
+  }, [])
 
   return (
     <div className="grid min-h-screen grid-cols-[420px_1fr]">
@@ -93,7 +92,7 @@ useEffect(() => {
         <form onSubmit={handleSubmit} className="grid gap-3">
           <p className="text-[13px] font-normal tracking-wide text-[#949494]">NEW NOTE</p>
           <input
-          ref={titleRef}
+            ref={titleRef}
             name="title"
             value={formData.title}
             onChange={handleChange}
